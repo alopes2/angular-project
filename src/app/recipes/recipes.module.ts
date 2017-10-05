@@ -20,7 +20,6 @@ import { CommonModule } from '@angular/common';
       RecipeItemComponent
     ],
     imports: [
-      CommonModule,
       ReactiveFormsModule,
       RecipesRoutingModule,
       SharedModule
