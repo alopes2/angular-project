@@ -1,3 +1,4 @@
+import { HttpClient } from '@angular/common/http';
 import { AuthService } from '../auth/auth.service';
 import { RecipeService } from '../recipes/recipe.service';
 import { Http, Response } from '@angular/http';
@@ -6,37 +7,65 @@ import { Recipe } from '../recipes/recipe.model';
 
 @Injectable()
 export class DataStorageService {
-  constructor(private http: Http,
-            private recipeService: RecipeService,
+  constructor(private httpClient: HttpClient,
+              // private http: Http,
+              private recipeService: RecipeService,
               private authService: AuthService) {}
 
   storeRecipes() {
     const token = this.authService.getToken();
-    return this.http
-            .put('https://angular-recipe-book-ad2eb.firebaseio.com/recipes.json?auth=' + token,
-                  this.recipeService.getRecipes());
+    // return this.http
+    //         .put('https://angular-recipe-book-ad2eb.firebaseio.com/recipes.json?auth=' + token,
+    //               this.recipeService.getRecipes());
+    return this.httpClient
+              .put('https://angular-recipe-book-ad2eb.firebaseio.com/recipes.json?auth=' + token,
+                this.recipeService.getRecipes(), {
+                  observe: 'events'
+                });
   }
 
   getRecipes() {
     const token = this.authService.getToken();
-    return this.http
-            .get('https://angular-recipe-book-ad2eb.firebaseio.com/recipes.json?auth=' + token)
-            .map(
-              (response: Response) => {
-                const recipes: Recipe[] = response.json();
-                for (const recipe of recipes) {
-                  if (!recipe['ingredients']) {
-                    console.log(recipe);
-                    recipe['ingredients'] = [];
-                  }
-                }
-                return recipes;
-              }
-            )
-            .subscribe(
-              (recipes: Recipe[]) => {
-                this.recipeService.setRecipes(recipes);
-              }
-            );
+    // return this.http
+    //         .get('https://angular-recipe-book-ad2eb.firebaseio.com/recipes.json?auth=' + token)
+    //         .map(
+    //           (response: Response) => {
+    //             const recipes: Recipe[] = response.json();
+    //             for (const recipe of recipes) {
+    //               if (!recipe['ingredients']) {
+    //                 console.log(recipe);
+    //                 recipe['ingredients'] = [];
+    //               }
+    //             }
+    //             return recipes;
+    //           }
+    //         )
+    //         .subscribe(
+    //           (recipes: Recipe[]) => {
+    //             this.recipeService.setRecipes(recipes);
+    //           }
+    //         );
+    this.httpClient
+    // .get<Recipe[]>('https://angular-recipe-book-ad2eb.firebaseio.com/recipes.json?auth=' + token)
+    .get<Recipe[]>('https://angular-recipe-book-ad2eb.firebaseio.com/recipes.json?auth=' + token, {
+      observe: 'body',
+      responseType: 'json'
+    })
+    .map(
+      (recipes) => {
+        for (const recipe of recipes) {
+          if (!recipe['ingredients']) {
+            console.log(recipe);
+            recipe['ingredients'] = [];
+          }
+        }
+        return recipes;
+      }
+    )
+    .subscribe(
+      (recipes: Recipe[]) => {
+        this.recipeService.setRecipes(recipes);
+      }
+    );
   }
 }
