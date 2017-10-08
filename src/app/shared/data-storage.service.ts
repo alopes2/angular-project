@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams, HttpRequest } from '@angular/common/http';
 import { AuthService } from '../auth/auth.service';
 import { RecipeService } from '../recipes/recipe.service';
 import { Http, Response } from '@angular/http';
@@ -17,11 +17,21 @@ export class DataStorageService {
     // return this.http
     //         .put('https://angular-recipe-book-ad2eb.firebaseio.com/recipes.json?auth=' + token,
     //               this.recipeService.getRecipes());
-    return this.httpClient
-              .put('https://angular-recipe-book-ad2eb.firebaseio.com/recipes.json?auth=' + token,
-                this.recipeService.getRecipes(), {
-                  observe: 'events'
-                });
+    const header = new HttpHeaders()
+                        .set('Authorization', 'asdlkf');
+    const params = new HttpParams().set('auth', token);
+    // return this.httpClient
+    //           .put('https://angular-recipe-book-ad2eb.firebaseio.com/recipes.json',
+    //             this.recipeService.getRecipes(), {
+    //               observe: 'events',
+    //               params: params
+    //               // headers:
+    //             });
+    const req = new HttpRequest('PUT',
+              'https://angular-recipe-book-ad2eb.firebaseio.com/recipes.json',
+              this.recipeService.getRecipes(),
+              {reportProgress: true, params: params});
+    return this.httpClient.request(req);
   }
 
   getRecipes() {
