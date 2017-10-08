@@ -27,10 +27,12 @@ export class DataStorageService {
     //               params: params
     //               // headers:
     //             });
+
+    // Here, the auth params are passed through the auth interceptor
     const req = new HttpRequest('PUT',
               'https://angular-recipe-book-ad2eb.firebaseio.com/recipes.json',
               this.recipeService.getRecipes(),
-              {reportProgress: true, params: params});
+              {reportProgress: true});
     return this.httpClient.request(req);
   }
 
@@ -55,9 +57,11 @@ export class DataStorageService {
     //             this.recipeService.setRecipes(recipes);
     //           }
     //         );
+
+    // Here, the auth params are passed through the auth interceptor
     this.httpClient
     // .get<Recipe[]>('https://angular-recipe-book-ad2eb.firebaseio.com/recipes.json?auth=' + token)
-    .get<Recipe[]>('https://angular-recipe-book-ad2eb.firebaseio.com/recipes.json?auth=' + token, {
+    .get<Recipe[]>('https://angular-recipe-book-ad2eb.firebaseio.com/recipes.json?', {
       observe: 'body',
       responseType: 'json'
     })
